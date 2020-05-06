@@ -26,12 +26,9 @@ namespace hooks
 			if (!ofunc)
 				return false;
 
-			if (settings::misc::reveal_rank)
+			if (reinterpret_cast<DWORD>(_ReturnAddress()) == reinterpret_cast<DWORD>(return_to_unknown))
 			{
-				if (reinterpret_cast<DWORD>(_ReturnAddress()) == reinterpret_cast<DWORD>(return_to_unknown))
-				{
-					return true;
-				}
+				return true;
 			}
 
 			return ofunc(pConVar);
