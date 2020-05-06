@@ -296,6 +296,7 @@ namespace menu
 
 									if (settings::changers::skin::show_cur)
 									{
+
 										if (names != weaponName)
 											continue;
 									}
