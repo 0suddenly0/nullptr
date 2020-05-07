@@ -3,12 +3,8 @@
 #include <Windows.h>
 #include <chrono>
 
-//#include "features/aimbot.h"
-//#include "features/visuals.h"
 #include "../security.h"
 #include "../hooks/hooks.h"
-
-//#include "features/profile_changer/protobuff_messages.h"
 
 void add_bind()
 {
@@ -102,8 +98,8 @@ void RenderBindWindow()
 }
 
 IDirect3DTexture9* m_skin_texture = nullptr;
-static std::string old_name_skin = "";
-static std::string old_name_weap = "";
+std::string old_name_skin = "";
+std::string old_name_weap = "";
 
 
 namespace menu
@@ -180,7 +176,7 @@ namespace menu
 
 		if (selected_tab == 1 || selected_tab == 6)
 		{
-			if (ImGui::Begin("##selects D E M O N S E N S E", &_visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_RainbowTitleBar | ImGuiWindowFlags_NoTitleBar))
+			if (ImGui::Begin("##N U L L P T R tabs", &_visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_RainbowTitleBar | ImGuiWindowFlags_NoTitleBar))
 			{
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
 				{
@@ -200,7 +196,7 @@ namespace menu
 		ImGui::SetNextWindowPos(ImVec2(main_pos.x, main_pos.y + main_size.y + 5.f));
 		ImGui::SetNextWindowSize(ImVec2{ 600, 400 }, ImGuiSetCond_Once);
 
-		if (ImGui::Begin("##D E M O N S E N S E body", &_visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_RainbowTitleBar/* | ImGuiWindowFlags_MenuBar*/ | ImGuiWindowFlags_NoTitleBar))
+		if (ImGui::Begin("##N U L L P T R body", &_visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_RainbowTitleBar | ImGuiWindowFlags_NoTitleBar))
 		{
 			ImGui::BeginGroup();
 			{
@@ -252,6 +248,9 @@ namespace menu
 		bool is_ct = definition_index == WEAPON_KNIFE || definition_index == GLOVE_CT_SIDE;
 		bool is_t = definition_index == WEAPON_KNIFE_T || definition_index == GLOVE_T_SIDE;
 
+		auto& cur_gloves = is_ct ? k_ct_glove_names.at(definition_override_vector_index): k_t_glove_names.at(definition_override_vector_index);
+		auto& cur_knifes = is_ct ? k_ct_glove_names.at(definition_override_vector_index) : k_t_glove_names.at(definition_override_vector_index);
+
 		if (is_weapon)
 		{
 			selected_skin_name = k_weapon_names.at(definition_vector_index).skin_name.c_str();
@@ -259,47 +258,26 @@ namespace menu
 		}
 		else if (is_knife)
 		{
-			if (is_ct)
-			{
-				selected_skin_name = k_ct_knife_names.at(definition_override_vector_index).skin_name.c_str();
-				selected_weapon_name = k_ct_knife_names.at(definition_override_vector_index)._weapon_name.c_str();
-			}
-			else if (is_t)
-			{
-				selected_skin_name = k_t_knife_names.at(definition_override_vector_index).skin_name.c_str();
-				selected_weapon_name = k_t_knife_names.at(definition_override_vector_index)._weapon_name.c_str();
-			}
+			selected_skin_name = cur_knifes.skin_name.c_str();
+			selected_weapon_name = cur_knifes._weapon_name.c_str();
 		}
 		else if (is_glove)
 		{
-			if (is_ct)
-			{
-				selected_skin_name = k_ct_glove_names.at(definition_override_vector_index).skin_name.c_str();
-				selected_weapon_name = k_ct_glove_names.at(definition_override_vector_index)._weapon_name.c_str();
-			}
-			else if (is_t)
-			{
-				selected_skin_name = k_t_glove_names.at(definition_override_vector_index).skin_name.c_str();
-				selected_weapon_name = k_t_glove_names.at(definition_override_vector_index)._weapon_name.c_str();
-			}
+			selected_skin_name = cur_gloves.skin_name.c_str();
+			selected_weapon_name = cur_gloves._weapon_name.c_str();
 		}
 
 		bool skin_changed = selected_skin_name != old_name_skin;
 		bool weapon_changed = selected_weapon_name != old_name_weap;
+		bool standart = selected_skin_name == "" || selected_skin_name == "empty";
 
-		bool dont_draw = selected_weapon_name == "default" || ((definition_vector_index == 2 || definition_vector_index == 3) && (selected_skin_name == "empty" || selected_skin_name == "") && (definition_override_vector_index != 1 && definition_override_vector_index != 2));
+		bool dont_draw = selected_weapon_name == "default" || ((definition_vector_index == 2 || definition_vector_index == 3) && standart && (definition_override_vector_index != 1 && definition_override_vector_index != 2));
 
 		if (settings::changers::skin::skin_preview && selected_tab == 3 && settings::changers::skin::show_cur)
 		{
 			if (skin_changed || weapon_changed)
 			{
-				std::string filename = "";
-
-				if (selected_skin_name == "" || selected_skin_name == "empty")
-					filename = "resource/flash/econ/weapons/base_weapons/" + std::string(selected_weapon_name) + ".png";
-				else
-					filename = "resource/flash/econ/default_generated/" + std::string(selected_weapon_name) + "_" + std::string(selected_skin_name) + "_light_large.png";
-
+				std::string filename = standart ? "resource/flash/econ/weapons/base_weapons/" + std::string(selected_weapon_name) + ".png" : "resource/flash/econ/default_generated/" + std::string(selected_weapon_name) + "_" + std::string(selected_skin_name) + "_light_large.png";
 
 				const auto handle = g_base_file_system->open(filename.c_str(), "r", "GAME");
 				if (handle)
