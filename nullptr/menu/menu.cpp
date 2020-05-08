@@ -235,7 +235,7 @@ namespace menu
 		bool is_t = definition_index == WEAPON_KNIFE_T || definition_index == GLOVE_T_SIDE;
 
 		auto& cur_gloves = is_ct ? k_ct_glove_names.at(definition_override_vector_index): k_t_glove_names.at(definition_override_vector_index);
-		auto& cur_knifes = is_ct ? k_ct_glove_names.at(definition_override_vector_index) : k_t_glove_names.at(definition_override_vector_index);
+		auto& cur_knifes = is_ct ? k_ct_knife_names.at(definition_override_vector_index) : k_t_knife_names.at(definition_override_vector_index);
 
 		if (is_weapon)
 		{
@@ -288,9 +288,6 @@ namespace menu
 
 			if (ImGui::Begin("skin preview##window", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_RainbowTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 			{
-				ImGui::Text(selected_skin_name.c_str());
-				ImGui::Text(selected_weapon_name.c_str());
-
 				if (m_skin_texture && !dont_draw)
 				{
 					ImGui::Image(m_skin_texture, { 256, 192 });
