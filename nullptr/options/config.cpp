@@ -782,7 +782,7 @@ namespace config
 					{
 						for (auto& [id, val] : entity_names)
 						{
-							auto& settings_cur = settings::visuals::chams::chams_items[id];
+							auto& settings_cur = settings::visuals::chams::player_settings[id].bot;
 
 							add_group(val);
 							{
@@ -791,8 +791,8 @@ namespace config
 								add_var("[chams]-[" + val + "] visible only", settings_cur.only_visible);
 								add_var("[chams]-[" + val + "] visible", settings_cur.visible);
 								add_var("[chams]-[" + val + "] invisible", settings_cur.invisible);
-								add_var("[chams]-[" + val + "] glow visible", settings_cur.glow_visible);
-								add_var("[chams]-[" + val + "] glow invisible", settings_cur.glow_invisible);
+								/*add_var("[chams]-[" + val + "] glow visible", settings_cur.glow_visible);
+								add_var("[chams]-[" + val + "] glow invisible", settings_cur.glow_invisible);*/
 							}
 							end_group();
 						}
@@ -802,7 +802,7 @@ namespace config
 							{
 								for (auto& [id, val] : entity_names_ragdoll)
 								{
-									auto& settings_cur = settings::visuals::chams::chams_items_ragdoll[id];
+									auto& settings_cur = settings::visuals::chams::ragdoll_settings[id].top;
 
 									add_group(val);
 									{
@@ -811,8 +811,8 @@ namespace config
 										add_var("[ragdoll]-[" + val + "] visible only", settings_cur.only_visible);
 										add_var("[ragdoll]-[" + val + "] visible", settings_cur.visible);
 										add_var("[ragdoll]-[" + val + "] invisible", settings_cur.invisible);
-										add_var("[ragdoll]-[" + val + "] glow visible", settings_cur.glow_visible);
-										add_var("[ragdoll]-[" + val + "] glow invisible", settings_cur.glow_invisible);
+										/*add_var("[ragdoll]-[" + val + "] glow visible", settings_cur.glow_visible);
+										add_var("[ragdoll]-[" + val + "] glow invisible", settings_cur.glow_invisible);*/
 									}
 									end_group();
 								}
@@ -821,7 +821,7 @@ namespace config
 
 							add_group("localplayer");
 							{
-								add_group("real model");
+								/*add_group("real model");
 								{
 									add_var("[real model] enable", settings::visuals::chams::local_model::real);
 									add_var("[real model] type", settings::visuals::chams::local_model::real_type);
@@ -843,11 +843,11 @@ namespace config
 									add_var("[hands] type", settings::visuals::chams::local_model::hands_type);
 									add_var("[hands] color", settings::visuals::chams::local_model::hands_color);
 								}
-								end_group();
+								end_group();*/
 							}
 							end_group();
 
-							add_group("backtrack");
+							/*add_group("backtrack");
 							{
 								add_var("[backtrack] enable", settings::visuals::chams::backtrack::enable);
 								add_var("[backtrack] draw type", settings::visuals::chams::backtrack::type_draw);
@@ -856,7 +856,7 @@ namespace config
 								add_var("[backtrack] visible", settings::visuals::chams::backtrack::color_visible);
 								add_var("[backtrack] invisible", settings::visuals::chams::backtrack::color_invisible);
 							}
-							end_group();
+							end_group();*/
 						}
 						end_group();
 
@@ -1016,10 +1016,6 @@ namespace config
 
 							add_var("[dropped weapon] box", settings::visuals::dropped_weapon::box);
 							add_var("[dropped weapon] box color", settings::visuals::dropped_weapon::box_color);
-
-							add_var("[dropped weapon] chams", settings::visuals::dropped_weapon::chams);
-							add_var("[dropped weapon] chams type", settings::visuals::dropped_weapon::chams_type);
-							add_var("[dropped weapon] chams color", settings::visuals::dropped_weapon::chams_color);
 
 							add_var("[dropped weapon] ammo bar", settings::visuals::dropped_weapon::ammo_bar);
 							add_var("[dropped weapon] ammo color outline", settings::visuals::dropped_weapon::bar_outline);

@@ -10,6 +10,84 @@
 #include <functional>
 #include <vector>
 
+template<size_t T>
+inline void horizontal_tabs(int& tab, char* (&tabs)[T], bool main = false)
+{
+	auto tabs_w = (ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().WindowPadding.x * 2.0f) / _countof(tabs);
+
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
+	{
+		if (main) render_tabsMain(tabs, tab, tabs_w, 20.0f);
+		else render_tabs(tabs, tab, tabs_w, 20.0f);
+	}
+	ImGui::PopStyleVar();
+}
+
+template<size_t T>
+void vertical_tabs(int& tab, char* (&tabs)[T], bool key_bind = false)
+{
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		{
+			render_tabs2(tabs, tab, ImGui::GetWindowSize().x, 20.0f, key_bind);
+		}
+		ImGui::PopStyleVar();
+	}
+	ImGui::PopStyleVar();
+}
+
+template<size_t N>
+void render_tabs(char* (&names)[N], int& activetab, float w, float h)
+{
+	bool values[N] = { false };
+	values[activetab] = true;
+	for (auto i = 0; i < N; ++i)
+	{
+		if (i == 0)
+		{
+			if (ImGui::ToggleButton(names[i], &values[i], ImVec2{ w, h }, 1))
+				activetab = i;
+		}
+		else if (i == N - 1)
+		{
+			if (ImGui::ToggleButton(names[i], &values[i], ImVec2{ w, h }, 2))
+				activetab = i;
+		}
+		else
+		{
+			if (ImGui::ToggleButton(names[i], &values[i], ImVec2{ w, h }, 0))
+				activetab = i;
+		}
+		if (i < N - 1) ImGui::SameLine();
+	}
+}
+template<size_t N>
+void render_tabsMain(char* (&names)[N], int& activetab, float w, float h)
+{
+	bool values[N] = { false };
+	values[activetab] = true;
+	for (auto i = 0; i < N; ++i)
+	{
+		if (i == 0)
+		{
+			if (ImGui::ToggleButtonMain(names[i], &values[i], ImVec2{ w, h }, 1))
+				activetab = i;
+		}
+		else if (i == N - 1)
+		{
+			if (ImGui::ToggleButtonMain(names[i], &values[i], ImVec2{ w, h }, 2))
+				activetab = i;
+		}
+		else
+		{
+			if (ImGui::ToggleButtonMain(names[i], &values[i], ImVec2{ w, h }, 0))
+				activetab = i;
+		}
+		if (i < N - 1) ImGui::SameLine();
+	}
+}
+
 template<size_t N>
 void render_tabs2(char* (&names)[N], int& activetab, float w, float h, bool Keybind)
 {

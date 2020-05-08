@@ -1001,17 +1001,9 @@ bool ImGui::KeyBind(const char* label, KeyBind_t* k, ImGuiKeyBindFlags flags)
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0,0));
             {
                 if (ImGui::ItemsToolTipBeginKeyBind(name_tooltip.c_str(), hovered))
-                {
-                    ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-                    {
-                        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-                        {
-                            render_tabs2(items, k->bind_type, ImGui::GetWindowSize().x, 20.0f, true);
-                        }
-                        ImGui::PopStyleVar();
-                    }
-                    ImGui::PopStyleVar();
-                    //ImGui::Combo(name_combo.c_str(), &k->bind_type, items, IM_ARRAYSIZE(items));
+                {                    
+                    vertical_tabs(k->bind_type, items, true);
+
                     ImGui::ItemsToolTipEnd();
                 }
             }

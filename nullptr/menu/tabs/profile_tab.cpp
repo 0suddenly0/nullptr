@@ -116,16 +116,9 @@ namespace menu
 		};
 
 		ImGui::Columns(2, nullptr, false);
-		ImGui::BeginChild("general##profile_changer", ImVec2(0, 200), true, ImGuiWindowFlags_ChildWindowTitle);
+		ImGui::BeginChild("general##profile_changer", ImVec2(0, 196), true, ImGuiWindowFlags_ChildWindowTitle);
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-			{
-				auto TabsW = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(modes);
-				render_tabs(modes, settings::changers::profile::mode_id, TabsW, 20.0f);
-			}
-			ImGui::PopStyleVar();
-
-			ImGui::Dummy(ImVec2(menu::_style.WindowPadding.x, 0.0f));
+			horizontal_tabs(settings::changers::profile::mode_id, modes);
 
 			if (settings::changers::profile::mode_id == 2)
 				ImGui::Combo("rank", &settings::changers::profile::profile_items[settings::changers::profile::mode_id].rank_id, ranks_dz, IM_ARRAYSIZE(ranks_dz));

@@ -101,7 +101,6 @@ IDirect3DTexture9* m_skin_texture = nullptr;
 std::string old_name_skin = "";
 std::string old_name_weap = "";
 
-
 namespace menu
 {
 	void initialize() {
@@ -160,13 +159,8 @@ namespace menu
 			main_pos = ImGui::GetWindowPos();
 			main_size = ImGui::GetWindowSize();
 
-			auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().WindowPadding.x * 2.0f) / _countof(tabs_c);
 
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-			{
-				render_tabsMain(tabs_c, selected_tab, TabsW_players_tab, 20.0f);
-			}
-			ImGui::PopStyleVar();
+			horizontal_tabs(selected_tab, tabs_c, true);
 
 			ImGui::End();
 		}
@@ -178,15 +172,7 @@ namespace menu
 		{
 			if (ImGui::Begin("##N U L L P T R tabs", &_visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_RainbowTitleBar | ImGuiWindowFlags_NoTitleBar))
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-				{
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-					{
-						selected_tab == 1 ? render_tabs2(esp_tabs_general, general_tab, ImGui::GetWindowSize().x, 20.0f, false) : render_tabs2(lua_tabs_general, general_tab_lua, ImGui::GetWindowSize().x, 20.0f, false);
-					}
-					ImGui::PopStyleVar();
-				}
-				ImGui::PopStyleVar();
+				selected_tab == 1 ? vertical_tabs(general_tab, esp_tabs_general) : vertical_tabs(general_tab_lua, lua_tabs_general);
 
 				ImGui::End();
 			}

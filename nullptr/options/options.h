@@ -181,10 +181,14 @@ struct chams_settings
 
 	Color visible = Color(0, 0, 0, 255);
 	Color invisible = Color(0, 0, 0, 255);
-
-	Color glow_visible = Color(0, 0, 0, 255);
-	Color glow_invisible = Color(0, 0, 0, 255);
 };
+
+struct chams_settings_t
+{
+	chams_settings top;
+	chams_settings bot;
+};
+
 
 namespace settings
 {	
@@ -333,12 +337,9 @@ namespace settings
 		{
 			bool enable = false;
 			bool box = false;
-			bool chams = false;
-			int chams_type = 0;
 			bool ammo_bar = false;
 
 			Color box_color = Color(0, 0, 0, 255);
-			Color chams_color = Color(255, 255, 255, 255);
 
 			Color bar_outline = Color(0, 0, 0, 255);
 			Color bar_background = Color(0, 0, 0, 255);
@@ -382,33 +383,14 @@ namespace settings
 
 		namespace chams
 		{
-			std::array<chams_settings, 3> chams_items;
-			std::array<chams_settings, 2> chams_items_ragdoll;
+			int tick_draw = 0;
+			chams_settings_t backtrack_settings;
+			chams_settings_t hands_settings;
+			chams_settings_t weapon_settings;
+			chams_settings_t weapon_dropped_settings;
 
-			namespace local_model
-			{
-				bool hands = false;
-				int hands_type = 0;
-				Color hands_color = Color(0, 0, 0, 255);
-
-				bool weapon = false;
-				int weapon_type = 0;
-				Color weapon_color = Color(0, 0, 0, 255);
-
-				bool real = false;
-				int real_type = 0;
-				Color real_color = Color(255, 255, 255, 255);
-			}
-
-			namespace backtrack
-			{
-				bool enable = false;
-				bool only_visible = true;
-				int type = 0;
-				int type_draw = 0;
-				Color color_visible = Color(255, 255, 255, 255);
-				Color color_invisible = Color(255, 255, 255, 255);
-			}
+			std::array<chams_settings_t, 3> player_settings;
+			std::array<chams_settings_t, 2> ragdoll_settings;
 		}
 	}
 
@@ -602,7 +584,8 @@ namespace settings
 static char* chams_types[] = {
 "regular",
 "flat",
-"glow"
+"glow",
+"warrame"
 };
 
 static char* tabs_chams[] = { "players", "world" };
@@ -610,6 +593,7 @@ static char* tabs_c[] = { "legit", "visual", "misc", "skin", "profile", "config"
 static char* esp_tabs_general[] = {"esp", "glow", "chams", "other", "world"};
 static char* lua_tabs_general[] = { "lua list", "function"};
 static char* players_tabs[] = { "enemies", "teammates", "local player" };
+static char* layer_tabs[] = { "bottom layer", "top layer" };
 static char* players_tabs_ragdoll[] = { "enemies", "teammates" };
 static char* chams_types_model[] = { "standart", "ragdoll" };
 extern bool  g_unload;

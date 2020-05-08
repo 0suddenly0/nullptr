@@ -134,56 +134,6 @@ inline void create_bind(std::string name, T enable, KeyBind_t* bind, float* side
 	}
 }
 
-template<size_t N>
-void render_tabs(char* (&names)[N], int& activetab, float w, float h)
-{
-	bool values[N] = { false };
-	values[activetab] = true;
-	for (auto i = 0; i < N; ++i)
-	{
-		if (i == 0)
-		{
-			if (ImGui::ToggleButton(names[i], &values[i], ImVec2{ w, h }, 1))
-				activetab = i;
-		}
-		else if (i == N - 1)
-		{
-			if (ImGui::ToggleButton(names[i], &values[i], ImVec2{ w, h }, 2))
-				activetab = i;
-		}
-		else
-		{
-			if (ImGui::ToggleButton(names[i], &values[i], ImVec2{ w, h }, 0))
-				activetab = i;
-		}
-		if (i < N - 1) ImGui::SameLine();
-	}
-}
-template<size_t N>
-void render_tabsMain(char* (&names)[N], int& activetab, float w, float h)
-{
-	bool values[N] = { false };
-	values[activetab] = true;
-	for (auto i = 0; i < N; ++i)
-	{
-		if (i == 0)
-		{
-			if (ImGui::ToggleButtonMain(names[i], &values[i], ImVec2{ w, h }, 1))
-				activetab = i;
-		}
-		else if (i == N - 1)
-		{
-			if (ImGui::ToggleButtonMain(names[i], &values[i], ImVec2{ w, h }, 2))
-				activetab = i;
-		}
-		else
-		{
-			if (ImGui::ToggleButtonMain(names[i], &values[i], ImVec2{ w, h }, 0))
-				activetab = i;
-		}
-		if (i < N - 1) ImGui::SameLine();
-	}
-}
 
 struct IDirect3DDevice9;
 

@@ -79,13 +79,8 @@ namespace menu
 		ImGui::EndChild("misc##misctab");
 		ImGui::BeginChild("clantag##misctab", ImVec2(0, 201), true, ImGuiWindowFlags_ChildWindowTitle);
 		{
-			auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(clantag_tabs);
 
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-			{
-				render_tabs(clantag_tabs, settings::misc::clantag::clantag_type, TabsW_players_tab, 20.0f);
-			}
-			ImGui::PopStyleVar();
+			horizontal_tabs(settings::misc::clantag::clantag_type, clantag_tabs);
 
 			ImGui::Checkbox("enable##clantag", &settings::misc::clantag::enable);
 

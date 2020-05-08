@@ -8,14 +8,14 @@ std::map<int, std::string> mode_names =
 	{2,"dangerzone"}
 };
 
-std::map<int, std::string/*const char*/> entity_names =
+std::map<int, std::string> entity_names =
 {
 	{0,"enemy"},
 	{1,"teammates"},
 	{2,"local player"}
 };
 
-std::map<int, std::string/*const char*/> entity_names_ragdoll =
+std::map<int, std::string> entity_names_ragdoll =
 {
 	{0,"enemy"},
 	{1,"teammates"},

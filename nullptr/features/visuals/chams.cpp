@@ -10,8 +10,10 @@
 
 int selected_entity;
 
-auto global_chams_settings = settings::visuals::chams::chams_items[selected_entity];
-auto global_chams_settings_ragdoll = settings::visuals::chams::chams_items_ragdoll[selected_entity];
+auto global_chams_settings = settings::visuals::chams::player_settings[selected_entity];
+auto global_chams_settings_ragdoll = settings::visuals::chams::ragdoll_settings[selected_entity];
+
+std::string current_model_name;
 
 namespace chams
 {
@@ -32,6 +34,35 @@ namespace chams
 }
 )#";
 		std::ofstream("csgo\\materials\\material_regular_walls.vmt") << R"#("VertexLitGeneric"
+{
+  "$basetexture" "vgui/white_additive"
+  "$ignorez"      "1"
+  "$envmap"       ""
+  "$nofog"        "1"
+  "$model"        "1"
+  "$nocull"       "0"
+  "$selfillum"    "1"
+  "$halflambert"  "1"
+  "$znearer"      "0"
+  "$flat"         "1"
+}
+)#";
+
+		std::ofstream("csgo\\materials\\material_wireframe.vmt") << R"#("VertexLitGeneric"
+{
+  "$basetexture" "vgui/white_additive"
+  "$ignorez"      "0"
+  "$envmap"       ""
+  "$nofog"        "1"
+  "$model"        "1"
+  "$nocull"       "0"
+  "$selfillum"    "1"
+  "$halflambert"  "1"
+  "$znearer"      "0"
+  "$flat"         "1"
+}
+)#";
+		std::ofstream("csgo\\materials\\material_wireframe_walls.vmt") << R"#("VertexLitGeneric"
 {
   "$basetexture" "vgui/white_additive"
   "$ignorez"      "1"
@@ -96,12 +127,14 @@ namespace chams
 }
 )#";
 
-		material_regular       = g_mat_system->find_material("material_regular"      , TEXTURE_GROUP_OTHER);
-		material_regular_walls = g_mat_system->find_material("material_regular_walls", TEXTURE_GROUP_OTHER);
-		material_glow          = g_mat_system->find_material("material_glow"         , TEXTURE_GROUP_OTHER);
-		material_glow_walls    = g_mat_system->find_material("material_glow_walls"   , TEXTURE_GROUP_OTHER);
-		material_flat          = g_mat_system->find_material("material_flat"         , TEXTURE_GROUP_OTHER);
-		material_flat_walls    = g_mat_system->find_material("material_flat_walls"   , TEXTURE_GROUP_OTHER);
+		material_wireframe       = g_mat_system->find_material("material_wireframe"      , TEXTURE_GROUP_OTHER);
+		material_wireframe_walls = g_mat_system->find_material("material_wireframe_walls", TEXTURE_GROUP_OTHER);
+		material_regular         = g_mat_system->find_material("material_regular"        , TEXTURE_GROUP_OTHER);
+		material_regular_walls   = g_mat_system->find_material("material_regular_walls"  , TEXTURE_GROUP_OTHER);
+		material_glow            = g_mat_system->find_material("material_glow"           , TEXTURE_GROUP_OTHER);
+		material_glow_walls      = g_mat_system->find_material("material_glow_walls"     , TEXTURE_GROUP_OTHER);
+		material_flat            = g_mat_system->find_material("material_flat"           , TEXTURE_GROUP_OTHER);
+		material_flat_walls      = g_mat_system->find_material("material_flat_walls"     , TEXTURE_GROUP_OTHER);
 	}
 
 	void shutdown()
@@ -114,33 +147,6 @@ namespace chams
 		std::remove("csgo\\materials\\material_flat_walls.vmt");
 	}
 
-	void scene_end_chams()
-	{
-		for (int i = 0; i < g_entity_list->get_highest_entity_index(); i++)
-		{
-			auto entity = reinterpret_cast<c_base_player*>(g_entity_list->get_client_entity(i));
-
-			if (entity && entity != g_local_player && settings::visuals::dropped_weapon::enable)
-			{
-				auto client_class = entity->get_client_class();
-				auto model_name = g_mdl_info->get_model_name(entity->get_model());
-
-				if (client_class->class_id == CSensorGrenadeProjectile || client_class->class_id == CAK47 || client_class->class_id == CDEagle || client_class->class_id == CC4 ||
-					client_class->class_id >= CWeaponAug && client_class->class_id <= CWeaponXM1014) {
-					if (settings::visuals::dropped_weapon::chams)
-					{
-						override_mat(
-							false,
-							settings::visuals::dropped_weapon::chams_type,
-							settings::visuals::dropped_weapon::chams_color);
-
-						entity->draw_model(1, 255);
-					}
-				}
-				g_mdl_render->forced_material_override(nullptr);
-			}
-		}
-	}
 	void override_mat(bool visible_check, int type, const Color& rgba)
 	{
 		i_material* material = nullptr;
@@ -150,6 +156,9 @@ namespace chams
 		case 0: visible_check ? material = material_regular_walls : material = material_regular; break;
 		case 1: visible_check ? material = material_flat_walls : material = material_flat; break;
 		case 2: visible_check ? material = material_glow_walls : material = material_glow; break;
+		case 3: visible_check ? material = material_wireframe_walls : material = material_wireframe;
+			material->set_material_var_flag(MATERIAL_VAR_WIREFRAME, true);
+			break;
 		}
 
 		if (type == 2)
@@ -185,15 +194,37 @@ namespace chams
 		if (!model_name || !g_local_player)
 			return;
 
+		current_model_name = model_name;
+
 		auto ent = (c_base_player*)g_entity_list->get_client_entity(pInfo.entity_index);
 
 		if (std::strstr(model_name, "arms") || std::strstr(model_name, "sleeve"))
 		{
-			if (settings::visuals::chams::local_model::hands)
+			auto cur_settings = settings::visuals::chams::hands_settings;
+
+			//set bot/top layer !visible
+			if (cur_settings.bot.enable)
 			{
-				override_mat(false, settings::visuals::chams::local_model::hands_type, settings::visuals::chams::local_model::hands_color);
-				*should_to_draw_original = true;
+				override_mat(
+					false,
+					cur_settings.bot.chams_type,
+					cur_settings.bot.visible);
+
+				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 			}
+
+			if (cur_settings.top.enable)
+			{
+				override_mat(
+					false,
+					cur_settings.top.chams_type,
+					cur_settings.top.visible);
+
+				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+			}
+
+			*should_to_draw_original = false;
+
 		}
 
 		if (!ent)
@@ -208,22 +239,42 @@ namespace chams
 		if (!ent_class)
 			return; 
 
-		if (ent_class->class_id == CMolotovProjectile ||      ent_class->class_id == CMolotovGrenade ||
-			ent_class->class_id == CDecoyGrenade ||           ent_class->class_id == CDecoyProjectile ||
-			ent_class->class_id == CFlashbang ||              ent_class->class_id == CIncendiaryGrenade ||
-			ent_class->class_id == CHEGrenade ||              ent_class->class_id == CSmokeGrenade ||
+		if (ent_class->class_id == CMolotovProjectile || ent_class->class_id == CMolotovGrenade ||
+			ent_class->class_id == CDecoyGrenade || ent_class->class_id == CDecoyProjectile ||
+			ent_class->class_id == CFlashbang || ent_class->class_id == CIncendiaryGrenade ||
+			ent_class->class_id == CHEGrenade || ent_class->class_id == CSmokeGrenade ||
 			ent_class->class_id == CSmokeGrenadeProjectile || ent_class->class_id == CSensorGrenadeProjectile ||
-			ent_class->class_id == CSensorGrenade ||          ent_class->class_id == CAK47 ||
-			ent_class->class_id == CBaseCSGrenade ||          ent_class->class_id == CBaseCSGrenadeProjectile ||
-			ent_class->class_id == CDEagle ||                 ent_class->class_id == CC4 ||
-			ent_class->class_id >= CWeaponAug &&              ent_class->class_id <= CWeaponXM1014) {
-			if (settings::visuals::dropped_weapon::enable && settings::visuals::dropped_weapon::chams)
+			ent_class->class_id == CSensorGrenade || ent_class->class_id == CAK47 ||
+			ent_class->class_id == CBaseCSGrenade || ent_class->class_id == CBaseCSGrenadeProjectile ||
+			ent_class->class_id == CDEagle || ent_class->class_id == CC4 ||
+			ent_class->class_id >= CWeaponAug && ent_class->class_id <= CWeaponXM1014)
+		{
+
+			auto cur_settings = settings::visuals::chams::weapon_dropped_settings;
+
+			//set bot/top layer visible
+			if (cur_settings.bot.enable)
 			{
 				override_mat(
 					false,
-					settings::visuals::dropped_weapon::chams_type,
-					settings::visuals::dropped_weapon::chams_color);
-				*should_to_draw_original = true;
+					cur_settings.bot.chams_type,
+					cur_settings.bot.visible);
+
+				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+				*should_to_draw_original = false;
+			}
+
+			if (cur_settings.top.enable)
+			{
+				override_mat(
+					false,
+					cur_settings.top.chams_type,
+					cur_settings.top.visible);
+
+				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+				*should_to_draw_original = false;
 			}
 		}
 
@@ -235,85 +286,62 @@ namespace chams
 
 				if (enemy)
 				{
-					global_chams_settings_ragdoll = settings::visuals::chams::chams_items_ragdoll[esp_types::enemies];
+					global_chams_settings_ragdoll = settings::visuals::chams::ragdoll_settings[esp_types::enemies];
 				}
 				else if (!enemy && !(ent == g_local_player))
 				{
-					global_chams_settings_ragdoll = settings::visuals::chams::chams_items_ragdoll[esp_types::teammates];
+					global_chams_settings_ragdoll = settings::visuals::chams::ragdoll_settings[esp_types::teammates];
 				}
 
-				if (!global_chams_settings_ragdoll.enable)
-					return;
-
-				if (!global_chams_settings_ragdoll.only_visible)
+				//set bot/top layer !visible
+				if (global_chams_settings_ragdoll.bot.enable && !global_chams_settings_ragdoll.bot.only_visible)
 				{
-					if (global_chams_settings_ragdoll.chams_type == 2)
-					{
-						override_mat(
-							true,
-							1,
-							global_chams_settings_ragdoll.glow_invisible);
+					override_mat(
+						true,
+						global_chams_settings_ragdoll.bot.chams_type,
+						global_chams_settings_ragdoll.bot.invisible);
 
-						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 
-						override_mat(
-							true,
-							global_chams_settings_ragdoll.chams_type,
-							global_chams_settings_ragdoll.invisible);
-
-						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-
-						override_mat(
-							false,
-							1,
-							global_chams_settings_ragdoll.glow_visible);
-
-						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-
-						override_mat(
-							false,
-							global_chams_settings_ragdoll.chams_type,
-							global_chams_settings_ragdoll.visible);
-
-						*should_to_draw_original = true;
-					}
-					else
-					{
-						override_mat(
-							true,
-							global_chams_settings_ragdoll.chams_type,
-							global_chams_settings_ragdoll.invisible);
-
-						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-
-						override_mat(
-							false,
-							global_chams_settings_ragdoll.chams_type,
-							global_chams_settings_ragdoll.visible);
-
-						*should_to_draw_original = true;
-					}
+					*should_to_draw_original = false;
 				}
-				else
+
+				if (global_chams_settings_ragdoll.top.enable && !global_chams_settings_ragdoll.top.only_visible)
 				{
-					if (global_chams_settings_ragdoll.chams_type == 2)
-					{
-						override_mat(
-							false,
-							1,
-							global_chams_settings_ragdoll.glow_visible);
+					override_mat(
+						true,
+						global_chams_settings_ragdoll.top.chams_type,
+						global_chams_settings_ragdoll.top.invisible);
 
-						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-					}
+					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 
+					*should_to_draw_original = false;
+				}
+
+				//set bot/top layer visible
+				if (global_chams_settings_ragdoll.bot.enable)
+				{
 					override_mat(
 						false,
-						global_chams_settings_ragdoll.chams_type,
-						global_chams_settings_ragdoll.visible);
+						global_chams_settings_ragdoll.bot.chams_type,
+						global_chams_settings_ragdoll.bot.visible);
 
-					*should_to_draw_original = true;
+					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+					*should_to_draw_original = false;
 				}
 
+				if (global_chams_settings_ragdoll.top.enable)
+				{
+					override_mat(
+						false,
+						global_chams_settings_ragdoll.top.chams_type,
+						global_chams_settings_ragdoll.top.visible);
+
+					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+					*should_to_draw_original = false;
+				}
 			}
 		}
 
@@ -326,44 +354,52 @@ namespace chams
 					g_render_view->set_blend(0.4f);
 				}
 
-				if (settings::visuals::chams::local_model::real && settings::misc::desync::type != 0)
+				auto cur_player_settigns = settings::visuals::chams::player_settings[esp_types::local_player];
+
+				//set bot/top layer !visible
+				if (cur_player_settigns.bot.enable && !cur_player_settigns.bot.only_visible)
 				{
-					Vector fl = g_local_player->get_abs_angles2();
-
-					Vector cham_angle = Vector(fl.x, globals::aa::real_angle, fl.z);
-
-					float color[4] = { 0.8f, 0.8f, 0.8f, 0.2f };
-
-					if (!g_local_player->is_alive())
-						return;
-
-					Vector OrigAngle = g_local_player->get_abs_angles2();
-					Vector OrigOrigin = g_local_player->get_abs_origin();
-
-					g_local_player->set_abs_original(OrigOrigin);
-					g_local_player->set_abs_angles2(cham_angle);
-
 					override_mat(
-						false,
-						settings::visuals::chams::local_model::real_type,
-						settings::visuals::chams::local_model::real_color);
+						true,
+						cur_player_settigns.bot.chams_type,
+						cur_player_settigns.bot.invisible);
 
-					g_local_player->draw_model(0x1, 255);
-
-					g_local_player->set_abs_angles2(OrigAngle);
-					g_local_player->set_abs_original(OrigOrigin);
-
-					g_studio_render->forced_material_override(nullptr);
+					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 
 					*should_to_draw_original = false;
 				}
 
-				if (settings::visuals::chams::chams_items[esp_types::local_player].enable)
+				if (cur_player_settigns.top.enable && !cur_player_settigns.top.only_visible)
+				{
+					override_mat(
+						true,
+						cur_player_settigns.top.chams_type,
+						cur_player_settigns.top.invisible);
+
+					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+					*should_to_draw_original = false;
+				}
+
+				//set bot/top layer visible
+				if (cur_player_settigns.bot.enable)
 				{
 					override_mat(
 						false,
-						settings::visuals::chams::chams_items[esp_types::local_player].chams_type,
-						settings::visuals::chams::chams_items[esp_types::local_player].visible);
+						cur_player_settigns.bot.chams_type,
+						cur_player_settigns.bot.visible);
+
+					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+					*should_to_draw_original = false;
+				}
+
+				if (cur_player_settigns.top.enable)
+				{
+					override_mat(
+						false,
+						cur_player_settigns.top.chams_type,
+						cur_player_settigns.top.visible);
 
 					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 
@@ -376,185 +412,212 @@ namespace chams
 
 				if (enemy)
 				{
-					global_chams_settings = settings::visuals::chams::chams_items[esp_types::enemies];
+					global_chams_settings = settings::visuals::chams::player_settings[esp_types::enemies];
 				}
 				else if (!enemy && !(ent == g_local_player))
 				{
-					global_chams_settings = settings::visuals::chams::chams_items[esp_types::teammates];
+					global_chams_settings = settings::visuals::chams::player_settings[esp_types::teammates];
 				}
 
 				if (ent->is_alive())
 				{
-					if (settings::visuals::chams::backtrack::enable && backtrack::data.count(ent->ent_index()) > 0)
+					if (backtrack::data.count(ent->ent_index()) > 0)
 					{
+						auto& cur_settings_backtrack = settings::visuals::chams::backtrack_settings;
+
 						auto& data = backtrack::data.at(ent->ent_index());
 						if (data.size() > 0)
 						{
-							if (settings::visuals::chams::backtrack::type_draw == 1)
+							if (settings::visuals::chams::tick_draw == 1)
 							{
 								for (auto& record : data)
 								{
-									if (!settings::visuals::chams::backtrack::only_visible)
+									//set bot/top layer !visible
+									if (cur_settings_backtrack.bot.enable && !cur_settings_backtrack.bot.only_visible)
 									{
 										override_mat(
 											true,
-											settings::visuals::chams::backtrack::type,
-											settings::visuals::chams::backtrack::color_invisible);
+											cur_settings_backtrack.bot.chams_type,
+											cur_settings_backtrack.bot.invisible);
 
 										oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, record.boneMatrix);
 
-										override_mat(
-											false,
-											settings::visuals::chams::backtrack::type,
-											settings::visuals::chams::backtrack::color_visible);
-
-										oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, record.boneMatrix);
-
-										g_studio_render->forced_material_override(nullptr);
-
-										*should_to_draw_original = false;
+										*should_to_draw_original = true;
 									}
-									else
+
+									if (cur_settings_backtrack.top.enable && !cur_settings_backtrack.top.only_visible)
+									{
+										override_mat(
+											true,
+											cur_settings_backtrack.top.chams_type,
+											cur_settings_backtrack.top.invisible);
+
+										oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, record.boneMatrix);
+
+										*should_to_draw_original = true;
+									}
+
+									//set bot/top layer visible
+									if (cur_settings_backtrack.bot.enable)
 									{
 										override_mat(
 											false,
-											settings::visuals::chams::backtrack::type,
-											settings::visuals::chams::backtrack::color_visible);
+											cur_settings_backtrack.bot.chams_type,
+											cur_settings_backtrack.bot.visible);
 
 										oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, record.boneMatrix);
 
-										g_studio_render->forced_material_override(nullptr);
-
-										*should_to_draw_original = false;
+										*should_to_draw_original = true;
 									}
+
+									if (cur_settings_backtrack.top.enable)
+									{
+										override_mat(
+											false,
+											cur_settings_backtrack.top.chams_type,
+											cur_settings_backtrack.top.visible);
+
+										oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, record.boneMatrix);
+
+										*should_to_draw_original = true;
+									}
+
+									g_studio_render->forced_material_override(nullptr);
 								}
 							}
-							else if (settings::visuals::chams::backtrack::type_draw == 0)
+							else if (settings::visuals::chams::tick_draw == 0)
 							{
 								auto& back = data.back();
 
-								if (!settings::visuals::chams::backtrack::only_visible)
+								if (cur_settings_backtrack.bot.enable && !cur_settings_backtrack.bot.only_visible)
 								{
 									override_mat(
 										true,
-										settings::visuals::chams::backtrack::type,
-										settings::visuals::chams::backtrack::color_invisible);
+										cur_settings_backtrack.bot.chams_type,
+										cur_settings_backtrack.bot.invisible);
 
 									oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, back.boneMatrix);
-
-									override_mat(
-										false,
-										settings::visuals::chams::backtrack::type,
-										settings::visuals::chams::backtrack::color_visible);
-
-								    oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, back.boneMatrix);
-
-									g_studio_render->forced_material_override(nullptr);
-
-									*should_to_draw_original = false;
 								}
-								else
+
+								if (cur_settings_backtrack.top.enable && !cur_settings_backtrack.top.only_visible)
+								{
+									override_mat(
+										true,
+										cur_settings_backtrack.top.chams_type,
+										cur_settings_backtrack.top.invisible);
+
+									oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, back.boneMatrix);
+								}
+
+								//set bot/top layer visible
+								if (cur_settings_backtrack.bot.enable)
 								{
 									override_mat(
 										false,
-										settings::visuals::chams::backtrack::type,
-										settings::visuals::chams::backtrack::color_visible);
+										cur_settings_backtrack.bot.chams_type,
+										cur_settings_backtrack.bot.visible);
 
 									oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, back.boneMatrix);
-
-									*should_to_draw_original = false;
 								}
+
+								if (cur_settings_backtrack.top.enable)
+								{
+									override_mat(
+										false,
+										cur_settings_backtrack.top.chams_type,
+										cur_settings_backtrack.top.visible);
+
+									oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, back.boneMatrix);
+								}
+
+								g_studio_render->forced_material_override(nullptr);
 							}
 						}
 					}
 
-
-					if (!global_chams_settings.enable)
-						return;
-
-					if (!global_chams_settings.only_visible)
+					//set bot/top layer !visible
+					if (global_chams_settings.bot.enable && !global_chams_settings.bot.only_visible)
 					{
-						if (global_chams_settings.chams_type == 2)
-						{
-							override_mat(
-								true,
-								1,
-								global_chams_settings.glow_invisible);
+						override_mat(
+							true,
+							global_chams_settings.bot.chams_type,
+							global_chams_settings.bot.invisible);
 
-							oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 
-							override_mat(
-								true,
-								global_chams_settings.chams_type,
-								global_chams_settings.invisible);
-
-							oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-
-							override_mat(
-								false,
-								1,
-								global_chams_settings.glow_visible);
-
-							oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-
-							override_mat(
-								false,
-								global_chams_settings.chams_type,
-								global_chams_settings.visible);
-
-							*should_to_draw_original = true;
-						}
-						else
-						{
-							override_mat(
-								true,
-								global_chams_settings.chams_type,
-								global_chams_settings.invisible);
-
-							oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-
-							override_mat(
-								false,
-								global_chams_settings.chams_type,
-								global_chams_settings.visible);
-
-							*should_to_draw_original = true;
-						}
+						*should_to_draw_original = false;
 					}
-					else
+
+					if (global_chams_settings.top.enable && !global_chams_settings.top.only_visible)
 					{
-						if (global_chams_settings.chams_type == 2)
-						{
-							override_mat(
-								false,
-								1,
-								global_chams_settings.glow_visible);
+						override_mat(
+							true,
+							global_chams_settings.top.chams_type,
+							global_chams_settings.top.invisible);
 
-							oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-						}
+						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 
+						*should_to_draw_original = false;
+					}
+
+					//set bot/top layer visible
+					if (global_chams_settings.bot.enable)
+					{
 						override_mat(
 							false,
-							global_chams_settings.chams_type,
-							global_chams_settings.visible);
+							global_chams_settings.bot.chams_type,
+							global_chams_settings.bot.visible);
 
+						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
 
-						*should_to_draw_original = true;
+						*should_to_draw_original = false;
 					}
+
+					if (global_chams_settings.top.enable)
+					{
+						override_mat(
+							false,
+							global_chams_settings.top.chams_type,
+							global_chams_settings.top.visible);
+
+						oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+						*should_to_draw_original = false;
+					}
+
 				}
 			}
 		}
 
 		if (strstr(model_name, "models/weapons/v_") != nullptr)
 		{
-			if (settings::visuals::chams::local_model::weapon)
-			{
-				override_mat(false, settings::visuals::chams::local_model::weapon_type, settings::visuals::chams::local_model::weapon_color);
+			auto& cur_weapon_settings = settings::visuals::chams::weapon_settings;
 
-				*should_to_draw_original = true;
+			//set bot/top layer visible
+			if (cur_weapon_settings.bot.enable)
+			{
+				override_mat(
+					false,
+					cur_weapon_settings.bot.chams_type,
+					cur_weapon_settings.bot.visible);
+
+				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+				*should_to_draw_original = false;
+			}
+
+			if (cur_weapon_settings.top.enable)
+			{
+				override_mat(
+					false,
+					cur_weapon_settings.top.chams_type,
+					cur_weapon_settings.top.visible);
+
+				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+				*should_to_draw_original = false;
 			}
 		}
-
 	}
 }
 

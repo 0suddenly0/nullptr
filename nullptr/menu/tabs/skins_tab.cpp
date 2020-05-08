@@ -1,5 +1,8 @@
 #include "../menu.h"
 
+static int selected_tab_skins = 0;
+char* skinchanger_tabs[] = { "general", "paint kit" };
+
 struct hud_weapons_t {
 	std::int32_t* get_weapon_count() {
 		return reinterpret_cast<std::int32_t*>(std::uintptr_t(this) + 0x80);
@@ -136,22 +139,12 @@ namespace menu
 
 		ImGui::BeginChild("skin select##skin tab", ImVec2(0, 0), true, ImGuiWindowFlags_ChildWindowTitle);
 		{
-			static int selected_tab_skins = 0;
-
 			auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
 			auto& satatt = settings::changers::skin::statrack_items[k_weapon_names[definition_vector_index].definition_index];
 			selected_entry.definition_index = k_weapon_names[definition_vector_index].definition_index;
 			selected_entry.definition_vector_index = definition_vector_index;
 
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-			{
-				static char* Players_tabs[] = { "general", "paint kit" };
-
-				auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(Players_tabs);
-
-				render_tabs(Players_tabs, selected_tab_skins, TabsW_players_tab, 20.0f);
-			}
-			ImGui::PopStyleVar();
+			horizontal_tabs(selected_tab_skins, skinchanger_tabs);
 
 			std::vector<weapon_name>& cur_knifes = this_ct(selected_entry.definition_index) ? k_ct_knife_names : k_t_knife_names;
 			std::vector<weapon_name>& cur_gloves = this_ct(selected_entry.definition_index) ? k_ct_glove_names : k_t_glove_names;

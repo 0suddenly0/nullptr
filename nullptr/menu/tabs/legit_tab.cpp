@@ -133,13 +133,8 @@ namespace menu
 		ImGui::Columns(2, NULL, false);
 		ImGui::BeginChild("weapon select", ImVec2(0, 132), true, ImGuiWindowFlags_ChildWindowTitle);
 		{
-			auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(legit_tabs);
 
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-			{
-				render_tabs(legit_tabs, settings::legit_bot::settings_category, TabsW_players_tab, 20.0f);
-			}
-			ImGui::PopStyleVar();
+			horizontal_tabs(settings::legit_bot::settings_category, legit_tabs);
 
 			if (settings::legit_bot::settings_category == 0)
 			{

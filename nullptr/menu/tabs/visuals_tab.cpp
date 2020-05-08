@@ -1,33 +1,51 @@
 #include "../menu.h"
 #include "../../helpers/sound.h"
+
+int chams_tab_player_e_layer = 0;
+int chams_tab_player_t_layer = 0;
+int chams_tab_player_l_layer = 0;
+int chams_tab_ragdoll_e_layer = 0;
+int chams_tab_ragdoll_t_layer = 0;
+int chams_tab_backtrack_layer = 0;
+int chams_tab_hands_layer = 0;
+int chams_tab_weapon_layer = 0;
+int chams_tab_weapon_dopped_layer = 0;
+
+int chams_selected = 0;
+int glow_player_tab = 0;
+int chams_player_tab = 0;
+int chams_player_tab_ragdoll = 0;
+int chams_weapon_tab = 0;
+int esp_player_tab = 0;
+
+int& get_tab_chams(int tab, int main)
+{
+	switch (tab)
+	{
+	case 0:
+		if (main == 0) return chams_tab_player_e_layer;
+		else if (main == 1) return chams_tab_player_t_layer;
+		else if (main == 2) return chams_tab_player_l_layer;
+		break;
+	case 1:
+		if (main == 0) return chams_tab_ragdoll_e_layer;
+		else if (main == 1) return chams_tab_ragdoll_t_layer;
+		break;
+	}
+}
+
 namespace menu
 {
 	void tabs::visuals_tab()
 	{
-
-		static int glow_player_tab = 0;
-		static int chams_player_tab = 0;
-		static int chams_player_tab_ragdoll = 0;
-		static int esp_player_tab = 0;
-
 		if (general_tab == 0)
 		{
 			auto settings_cur = &settings::visuals::esp::esp_items[esp_player_tab];
 
 			ImGui::Columns(2, nullptr, false);
-			ImGui::BeginChild("general##child", ImVec2(0, 81), true, ImGuiWindowFlags_ChildWindowTitle);
+			ImGui::BeginChild("general##child", ImVec2(0, 77), true, ImGuiWindowFlags_ChildWindowTitle);
 			{
-				auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(players_tabs);
-
-
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-				{
-					render_tabs(players_tabs, esp_player_tab, TabsW_players_tab, 20.0f);
-				}
-				ImGui::PopStyleVar();
-
-
-				ImGui::Dummy(ImVec2(0.f, 0.f));
+				horizontal_tabs(esp_player_tab, players_tabs);
 
 				ImGui::Checkbox("enable", &settings_cur->enable);
 			}
@@ -110,19 +128,9 @@ namespace menu
 			static char* glow_types[] = { "standart outline", "glow pulsing", "inner outline", "inner outline pulsing" };
 
 			ImGui::Columns(2, nullptr, false);
-			ImGui::BeginChild("general##childglow", ImVec2(0, 81), true, ImGuiWindowFlags_ChildWindowTitle);
+			ImGui::BeginChild("general##childglow", ImVec2(0, 77), true, ImGuiWindowFlags_ChildWindowTitle);
 			{
-				auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(players_tabs);
-
-
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-				{
-					render_tabs(players_tabs, glow_player_tab, TabsW_players_tab, 20.0f);
-				}
-				ImGui::PopStyleVar();
-
-
-				ImGui::Dummy(ImVec2(menu::_style.WindowPadding.x, 0.0f));
+				horizontal_tabs(glow_player_tab, players_tabs);
 
 				ImGui::Checkbox("enable", &settings_cur->enable);
 			}
@@ -144,74 +152,31 @@ namespace menu
 		}
 		if (general_tab == 2)
 		{
-			static int chams_selected = 0;
-
-			auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - ImGui::GetStyle().WindowPadding.x * 2.0f) / _countof(tabs_chams);
-
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-			{
-				render_tabs(tabs_chams, chams_selected, TabsW_players_tab, 20.0f);
-			}
-			ImGui::PopStyleVar();
-			ImGui::Dummy(ImVec2(0, 0));
+			horizontal_tabs(chams_selected, tabs_chams);
 
 			if (chams_selected == 0)
 			{
-				auto settings_cur = &settings::visuals::chams::chams_items[chams_player_tab];
+				chams_settings* settings_cur = nullptr;
 
 				ImGui::Columns(2, nullptr, false);
-				ImGui::BeginChild("general##childchams", ImVec2(0, 81), true, ImGuiWindowFlags_ChildWindowTitle);
+				ImGui::BeginChild("general##childchams", ImVec2(0, 101), true, ImGuiWindowFlags_ChildWindowTitle);
 				{
-					auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(players_tabs);
-
-
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-					{
-						render_tabs(players_tabs, chams_player_tab, TabsW_players_tab, 20.0f);
-					}
-					ImGui::PopStyleVar();
-
-
-					ImGui::Dummy(ImVec2(menu::_style.WindowPadding.x, 0.0f));
+					horizontal_tabs(chams_player_tab, players_tabs);					
+					horizontal_tabs(get_tab_chams(0, chams_player_tab), layer_tabs);
+					settings_cur = get_tab_chams(0, chams_player_tab) == 0 ? &settings::visuals::chams::player_settings[chams_player_tab].bot : &settings::visuals::chams::player_settings[chams_player_tab].top;
 
 					ImGui::Checkbox("enable##chams", &settings_cur->enable);
 				}
 				ImGui::EndChild("general##childchams");
 				ImGui::BeginChild("players##visuals_chams", ImVec2(0, 0), true, ImGuiWindowFlags_ChildWindowTitle);
 				{
-					if (chams_player_tab != 2)
-					{
-						ImGui::Checkbox("visible only", &settings_cur->only_visible);
-						ImGui::Combo("type", &settings_cur->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
 
-						if (settings_cur->chams_type != 2)
-						{
-							ImGui::ColorEdit3("color visible", &settings_cur->visible);
-							ImGui::ColorEdit3("color invisible", &settings_cur->invisible);
-						}
-						else
-						{
-							ImGui::ColorEdit3("color visible", &settings_cur->visible);
-							ImGui::ColorEdit3("color visible back model", &settings_cur->glow_visible);
+					ImGui::Checkbox("visible only", &settings_cur->only_visible);
 
-							ImGui::ColorEdit3("color invisible", &settings_cur->invisible);
-							ImGui::ColorEdit3("color invisible back model", &settings_cur->glow_invisible);
-						}
-					}
+					ImGui::Combo("type", &settings_cur->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
 
-					if (chams_player_tab == 2)
-					{
-						ImGui::Combo("type##chams_loclpl", &settings_cur->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
-
-						ImGui::ColorEdit3("color##chams_localpl", &settings_cur->visible);
-
-						ImGui::NewLine();
-
-						ImGui::Checkbox("real angle##visuals_chams_real", &settings::visuals::chams::local_model::real);
-						ImGui::SameLine();
-						ImGui::ColorEdit3("##visuals_chams_realColor", &settings::visuals::chams::local_model::real_color);
-						ImGui::Combo("type##visuals_chams_real", &settings::visuals::chams::local_model::real_type, chams_types, IM_ARRAYSIZE(chams_types));
-					}
+					ImGui::ColorEdit3("color visible", &settings_cur->visible);
+					ImGui::ColorEdit3("color invisible", &settings_cur->invisible);
 
 					ImGui::NewLine();
 				}
@@ -220,74 +185,81 @@ namespace menu
 
 				ImGui::BeginChild("backtrack##visuals_chams_backtrack", ImVec2(0, 0), true, ImGuiWindowFlags_ChildWindowTitle);
 				{
-					ImGui::Checkbox("enable##visuals_chams_backtrack", &settings::visuals::chams::backtrack::enable);
-					ImGui::Checkbox("visible only##visuals_chams_backtrack", &settings::visuals::chams::backtrack::only_visible);
-					ImGui::Combo("type##visuals_chams_backtrack", &settings::visuals::chams::backtrack::type, chams_types, IM_ARRAYSIZE(chams_types));
-					ImGui::Combo("draw##visuals_chams_backtrack", &settings::visuals::chams::backtrack::type_draw, std::vector<std::string>{ "last tick", "all ticks" });
-					ImGui::ColorEdit3("color visible##color_handsv3123123isuals_chams_backtrack", &settings::visuals::chams::backtrack::color_visible);
-					ImGui::ColorEdit3("color invisible##color_handsvisuals_chams_backtrack", &settings::visuals::chams::backtrack::color_invisible);
+					horizontal_tabs(chams_tab_backtrack_layer, layer_tabs);
+					chams_settings* settings_cur_backtrak = chams_tab_backtrack_layer == 0 ? &settings::visuals::chams::backtrack_settings.bot : &settings::visuals::chams::backtrack_settings.top;
+					ImGui::Checkbox("enable##visuals_chams_backtrack", &settings_cur_backtrak->enable);
+					ImGui::Combo("draw##visuals_chams_backtrack", &settings::visuals::chams::tick_draw, std::vector<std::string>{ "last tick", "all ticks" });
+					ImGui::Checkbox("visible only##visuals_chams_backtrack", &settings_cur_backtrak->only_visible);
+					ImGui::Combo("type##visuals_chams_backtrack", &settings_cur_backtrak->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
+					ImGui::ColorEdit3("color visible##color_handsv3123123isuals_chams_backtrack", &settings_cur_backtrak->visible);
+					ImGui::ColorEdit3("color invisible##color_handsvisuals_chams_backtrack", &settings_cur_backtrak->invisible);
 				}
 				ImGui::EndChild("backtrack##visuals_chams_backtrack");
 			}
 			else if (chams_selected == 1)
 			{
-				auto settings_cur = &settings::visuals::chams::chams_items_ragdoll[chams_player_tab_ragdoll];
+				chams_settings* settings_cur = nullptr;
 
 				ImGui::Columns(2, nullptr, false);
-				ImGui::BeginChild("ragdolls##childchams", ImVec2(0, 0), true, ImGuiWindowFlags_ChildWindowTitle);
+				ImGui::BeginChild("general##childchams", ImVec2(0, 101), true, ImGuiWindowFlags_ChildWindowTitle);
 				{
-					auto TabsW_players_tab = (ImGui::GetCurrentWindow()->Size.x - menu::_style.WindowPadding.x * 2.0f) / _countof(players_tabs_ragdoll);
+					horizontal_tabs(chams_player_tab_ragdoll, players_tabs_ragdoll);
+					horizontal_tabs(get_tab_chams(1, chams_player_tab_ragdoll), layer_tabs);
+					settings_cur = get_tab_chams(1, chams_player_tab_ragdoll) == 0 ? &settings::visuals::chams::ragdoll_settings[chams_player_tab_ragdoll].bot : &settings::visuals::chams::ragdoll_settings[chams_player_tab_ragdoll].top;
 
+					ImGui::Checkbox("enable##chams", &settings_cur->enable);
+				}
+				ImGui::EndChild("general##childchams");
 
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing_new, ImVec2(0, 0));
-					{
-						render_tabs(players_tabs_ragdoll, chams_player_tab_ragdoll, TabsW_players_tab, 20.0f);
-					}
-					ImGui::PopStyleVar();
+				ImGui::BeginChild("ragdolls##visuals_chams", ImVec2(0, 0), true, ImGuiWindowFlags_ChildWindowTitle);
+				{
 
+					ImGui::Checkbox("visible only", &settings_cur->only_visible);
 
-					ImGui::Dummy(ImVec2(menu::_style.WindowPadding.x, 0.0f));
+					ImGui::Combo("type", &settings_cur->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
 
-					ImGui::Checkbox("enable##chamsragdoll", &settings_cur->enable);
-
-					ImGui::Checkbox("visible only##ragdoll", &settings_cur->only_visible);
-					ImGui::Combo("type##ragdoll", &settings_cur->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
-
-					if (settings_cur->chams_type != 2)
-					{
-						ImGui::ColorEdit3("color visible##ragdoll", &settings_cur->visible);
-						ImGui::ColorEdit3("color invisible##ragdoll", &settings_cur->invisible);
-					}
-					else
-					{
-						ImGui::ColorEdit3("color visible##ragdoll", &settings_cur->visible);
-						ImGui::ColorEdit3("color visible back model##ragdoll", &settings_cur->glow_visible);
-
-						ImGui::ColorEdit3("color invisible##ragdoll", &settings_cur->invisible);
-						ImGui::ColorEdit3("color invisible back model##ragdoll", &settings_cur->glow_invisible);
-					}
-
+					ImGui::ColorEdit3("color visible", &settings_cur->visible);
+					ImGui::ColorEdit3("color invisible", &settings_cur->invisible);
 
 					ImGui::NewLine();
 				}
 				ImGui::EndChild("ragdolls##visuals_chams");
 				ImGui::NextColumn();
 
-				ImGui::BeginChild("hand's##visuals_chams_hands", ImVec2(0, 88), true, ImGuiWindowFlags_ChildWindowTitle);
+				ImGui::BeginChild("hand's##visuals_chams_hands", ImVec2(0, 112), true, ImGuiWindowFlags_ChildWindowTitle);
 				{
-					ImGui::Checkbox("enable##visuals_chams_hands", &settings::visuals::chams::local_model::hands);
+					horizontal_tabs(chams_tab_hands_layer, layer_tabs);
+
+					chams_settings* cur_settings = chams_tab_hands_layer == 0 ? &settings::visuals::chams::hands_settings.bot : &settings::visuals::chams::hands_settings.top;
+
+					ImGui::Checkbox("enable##visuals_chams_hands", &cur_settings->enable);
 					ImGui::SameLine();
-					ImGui::ColorEdit3("##color_handsvisuals_chams", &settings::visuals::chams::local_model::hands_color);
-					ImGui::Combo("type##visuals_chams_hands", &settings::visuals::chams::local_model::hands_type, chams_types, IM_ARRAYSIZE(chams_types));
+					ImGui::ColorEdit3("##color_handsvisuals_chams", &cur_settings->visible);
+					ImGui::Combo("type##visuals_chams_hands", &cur_settings->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
 				}
 				ImGui::EndChild("hand's##visuals_chams");
 
-				ImGui::BeginChild("weapon##visuals_chams_weapon", ImVec2(0, 88), true, ImGuiWindowFlags_ChildWindowTitle);
+				ImGui::BeginChild("weapon##visuals_chams_weapon", ImVec2(0, 136), true, ImGuiWindowFlags_ChildWindowTitle);
 				{
-					ImGui::Checkbox("enable##visuals_chams_weapon", &settings::visuals::chams::local_model::weapon);
+					chams_settings* cur_settings = nullptr;
+
+					char* tabs_local[] = {"in hand", "dropped"};
+
+					horizontal_tabs(chams_weapon_tab, tabs_local);
+					horizontal_tabs(chams_weapon_tab == 0 ? chams_tab_weapon_layer : chams_tab_weapon_dopped_layer, layer_tabs);
+					if (chams_weapon_tab == 1)
+					{
+						cur_settings = chams_tab_weapon_dopped_layer == 0 ? &settings::visuals::chams::weapon_dropped_settings.bot : &settings::visuals::chams::weapon_dropped_settings.top;
+					}
+					else
+					{
+						cur_settings = chams_tab_weapon_layer == 0 ? &settings::visuals::chams::weapon_settings.bot : &settings::visuals::chams::weapon_settings.top;
+					}
+
+					ImGui::Checkbox("enable##visuals_chams_weapon", &cur_settings->enable);
 					ImGui::SameLine();
-					ImGui::ColorEdit3("##color_handsvisuals_chams_weapon", &settings::visuals::chams::local_model::weapon_color);
-					ImGui::Combo("type##visuals_chams_weapon", &settings::visuals::chams::local_model::weapon_type, chams_types, IM_ARRAYSIZE(chams_types));
+					ImGui::ColorEdit3("##color_handsvisuals_chams_weapon", &cur_settings->visible);
+					ImGui::Combo("type##visuals_chams_weapon", &cur_settings->chams_type, chams_types, IM_ARRAYSIZE(chams_types));
 				}
 				ImGui::EndChild("weapon##visuals_chams_weapon");
 			}
@@ -318,11 +290,6 @@ namespace menu
 					ImGui::Checkbox("box##dropped_weapons", &settings::visuals::dropped_weapon::box);
 					ImGui::SameLine();
 					ImGui::ColorEdit4("##colorbox_dropped_weapons", &settings::visuals::dropped_weapon::box_color);
-
-					ImGui::Checkbox("chams##chamsdropped_weapons", &settings::visuals::dropped_weapon::chams);
-					ImGui::SameLine();
-					ImGui::ColorEdit3("##colorchams_dropped_weapons", &settings::visuals::dropped_weapon::chams_color);
-					ImGui::Combo("type##droppedweapon_chams_type", &settings::visuals::dropped_weapon::chams_type, chams_types, IM_ARRAYSIZE(chams_types));
 
 					ImGui::Checkbox("ammo bar##dropped_weapons", &settings::visuals::dropped_weapon::ammo_bar);
 
