@@ -207,6 +207,8 @@ namespace chams
 					cur_settings.bot.visible);
 
 				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+				*should_to_draw_original = false;
 			}
 
 			if (cur_settings.top.enable)
@@ -217,10 +219,9 @@ namespace chams
 					cur_settings.top.visible);
 
 				oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
+
+				*should_to_draw_original = false;
 			}
-
-			*should_to_draw_original = false;
-
 		}
 
 		if (!ent)
@@ -335,7 +336,7 @@ namespace chams
 						global_chams_settings_ragdoll.top.visible);
 
 					oDrawModelExecute(g_mdl_render, 0, ctx, state, pInfo, matrix);
-
+					
 					*should_to_draw_original = false;
 				}
 			}

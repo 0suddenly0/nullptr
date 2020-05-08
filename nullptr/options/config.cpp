@@ -782,17 +782,29 @@ namespace config
 					{
 						for (auto& [id, val] : entity_names)
 						{
-							auto& settings_cur = settings::visuals::chams::player_settings[id].bot;
+							auto& settings_cur_bot = settings::visuals::chams::player_settings[id].bot;
+							auto& settings_cur_top = settings::visuals::chams::player_settings[id].top;
 
 							add_group(val);
 							{
-								add_var("[chams]-[" + val + "] enable", settings_cur.enable);
-								add_var("[chams]-[" + val + "] type", settings_cur.chams_type);
-								add_var("[chams]-[" + val + "] visible only", settings_cur.only_visible);
-								add_var("[chams]-[" + val + "] visible", settings_cur.visible);
-								add_var("[chams]-[" + val + "] invisible", settings_cur.invisible);
-								/*add_var("[chams]-[" + val + "] glow visible", settings_cur.glow_visible);
-								add_var("[chams]-[" + val + "] glow invisible", settings_cur.glow_invisible);*/
+								add_group("bottom layer");
+								{
+									add_var("[chams]-[" + val + "]-[botttom] enable", settings_cur_bot.enable);
+									add_var("[chams]-[" + val + "]-[botttom] type", settings_cur_bot.chams_type);
+									add_var("[chams]-[" + val + "]-[botttom] visible only", settings_cur_bot.only_visible);
+									add_var("[chams]-[" + val + "]-[botttom] visible", settings_cur_bot.visible);
+									add_var("[chams]-[" + val + "]-[botttom] invisible", settings_cur_bot.invisible);
+								}
+								end_group();
+								add_group("top layer");
+								{
+									add_var("[chams]-[" + val + "]-[top] enable", settings_cur_top.enable);
+									add_var("[chams]-[" + val + "]-[top] type", settings_cur_top.chams_type);
+									add_var("[chams]-[" + val + "]-[top] visible only", settings_cur_top.only_visible);
+									add_var("[chams]-[" + val + "]-[top] visible", settings_cur_top.visible);
+									add_var("[chams]-[" + val + "]-[top] invisible", settings_cur_top.invisible);
+								}
+								end_group();
 							}
 							end_group();
 						}
@@ -802,17 +814,25 @@ namespace config
 							{
 								for (auto& [id, val] : entity_names_ragdoll)
 								{
-									auto& settings_cur = settings::visuals::chams::ragdoll_settings[id].top;
+									auto& settings_cur_bot = settings::visuals::chams::ragdoll_settings[id].bot;
+									auto& settings_cur_top = settings::visuals::chams::ragdoll_settings[id].top;
 
-									add_group(val);
+									add_group("bottom layer");
 									{
-										add_var("[ragdoll]-[" + val + "] enable", settings_cur.enable);
-										add_var("[ragdoll]-[" + val + "] type", settings_cur.chams_type);
-										add_var("[ragdoll]-[" + val + "] visible only", settings_cur.only_visible);
-										add_var("[ragdoll]-[" + val + "] visible", settings_cur.visible);
-										add_var("[ragdoll]-[" + val + "] invisible", settings_cur.invisible);
-										/*add_var("[ragdoll]-[" + val + "] glow visible", settings_cur.glow_visible);
-										add_var("[ragdoll]-[" + val + "] glow invisible", settings_cur.glow_invisible);*/
+										add_var("[ragdoll]-[" + val + "]-[botttom] enable", settings_cur_bot.enable);
+										add_var("[ragdoll]-[" + val + "]-[botttom] type", settings_cur_bot.chams_type);
+										add_var("[ragdoll]-[" + val + "]-[botttom] visible only", settings_cur_bot.only_visible);
+										add_var("[ragdoll]-[" + val + "]-[botttom] visible", settings_cur_bot.visible);
+										add_var("[ragdoll]-[" + val + "]-[botttom] invisible", settings_cur_bot.invisible);
+									}
+									end_group();
+									add_group("top layer");
+									{
+										add_var("[ragdoll]-[" + val + "]-[top] enable", settings_cur_top.enable);
+										add_var("[ragdoll]-[" + val + "]-[top] type", settings_cur_top.chams_type);
+										add_var("[ragdoll]-[" + val + "]-[top] visible only", settings_cur_top.only_visible);
+										add_var("[ragdoll]-[" + val + "]-[top] visible", settings_cur_top.visible);
+										add_var("[ragdoll]-[" + val + "]-[top] invisible", settings_cur_top.invisible);
 									}
 									end_group();
 								}
@@ -821,42 +841,79 @@ namespace config
 
 							add_group("localplayer");
 							{
-								/*add_group("real model");
-								{
-									add_var("[real model] enable", settings::visuals::chams::local_model::real);
-									add_var("[real model] type", settings::visuals::chams::local_model::real_type);
-									add_var("[real model] color", settings::visuals::chams::local_model::real_color);
-								}
-								end_group();
-
 								add_group("weapon");
 								{
-									add_var("[weapon] enable", settings::visuals::chams::local_model::weapon);
-									add_var("[weapon] type", settings::visuals::chams::local_model::weapon_type);
-									add_var("[weapon] color", settings::visuals::chams::local_model::weapon_color);
+									auto& settings_cur_bot = settings::visuals::chams::weapon_settings.bot;
+									auto& settings_cur_top = settings::visuals::chams::weapon_settings.top;
+
+									add_group("bottom layer");
+									{
+										add_var("[weapon]-[botttom] enable", settings_cur_bot.enable);
+										add_var("[weapon]-[botttom] type", settings_cur_bot.chams_type);
+										add_var("[weapon]-[botttom] visible", settings_cur_bot.visible);
+									}
+									end_group();
+									add_group("top layer");
+									{
+										add_var("[weapon]-[top] enable", settings_cur_top.enable);
+										add_var("[weapon]-[top] type", settings_cur_top.chams_type);
+										add_var("[weapon]-[top] visible", settings_cur_top.visible);
+									}
+									end_group();
 								}
 								end_group();
 
 								add_group("hands");
 								{
-									add_var("[hands] enable", settings::visuals::chams::local_model::hands);
-									add_var("[hands] type", settings::visuals::chams::local_model::hands_type);
-									add_var("[hands] color", settings::visuals::chams::local_model::hands_color);
+									auto& settings_cur_bot = settings::visuals::chams::hands_settings.bot;
+									auto& settings_cur_top = settings::visuals::chams::hands_settings.top;
+
+									add_group("bottom layer");
+									{
+										add_var("[hands]-[botttom] enable", settings_cur_bot.enable);
+										add_var("[hands]-[botttom] type", settings_cur_bot.chams_type);
+										add_var("[hands]-[botttom] visible", settings_cur_bot.visible);
+									}
+									end_group();
+									add_group("top layer");
+									{
+										add_var("[hands]-[top] enable", settings_cur_top.enable);
+										add_var("[hands]-[top] type", settings_cur_top.chams_type);
+										add_var("[hands]-[top] visible", settings_cur_top.visible);
+									}
+									end_group();
 								}
-								end_group();*/
+								end_group();
 							}
 							end_group();
 
-							/*add_group("backtrack");
+							add_group("backtrack");
 							{
-								add_var("[backtrack] enable", settings::visuals::chams::backtrack::enable);
-								add_var("[backtrack] draw type", settings::visuals::chams::backtrack::type_draw);
-								add_var("[backtrack] type", settings::visuals::chams::backtrack::type);
-								add_var("[backtrack] visible only", settings::visuals::chams::backtrack::only_visible);
-								add_var("[backtrack] visible", settings::visuals::chams::backtrack::color_visible);
-								add_var("[backtrack] invisible", settings::visuals::chams::backtrack::color_invisible);
+								auto& settings_cur_bot = settings::visuals::chams::hands_settings.bot;
+								auto& settings_cur_top = settings::visuals::chams::hands_settings.top;
+
+								add_var("[backtrack] tick draw", settings::visuals::chams::tick_draw);
+
+								add_group("bottom layer");
+								{
+									add_var("[backtrack]-[botttom] enable", settings_cur_bot.enable);
+									add_var("[backtrack]-[botttom] type", settings_cur_bot.chams_type);
+									add_var("[backtrack]-[botttom] visible only", settings_cur_bot.only_visible);
+									add_var("[backtrack]-[botttom] visible", settings_cur_bot.visible);
+									add_var("[backtrack]-[botttom] invisible", settings_cur_bot.invisible);
+								}
+								end_group();
+								add_group("top layer");
+								{
+									add_var("[backtrack]-[top] enable", settings_cur_top.enable);
+									add_var("[backtrack]-[top] type", settings_cur_top.chams_type);
+									add_var("[backtrack]-[top] visible only", settings_cur_top.only_visible);
+									add_var("[backtrack]-[top] visible", settings_cur_top.visible);
+									add_var("[backtrack]-[top] invisible", settings_cur_top.invisible);
+								}
+								end_group();
 							}
-							end_group();*/
+							end_group();
 						}
 						end_group();
 
@@ -1021,6 +1078,28 @@ namespace config
 							add_var("[dropped weapon] ammo color outline", settings::visuals::dropped_weapon::bar_outline);
 							add_var("[dropped weapon] ammo color back", settings::visuals::dropped_weapon::bar_background);
 							add_var("[dropped weapon] ammo color main", settings::visuals::dropped_weapon::bar_main);
+
+							add_group("dropped weapon chams");
+							{
+								auto& settings_cur_bot = settings::visuals::chams::weapon_dropped_settings.bot;
+								auto& settings_cur_top = settings::visuals::chams::weapon_dropped_settings.top;
+
+								add_group("bottom layer");
+								{
+									add_var("[dropped weapon]-[botttom] enable", settings_cur_bot.enable);
+									add_var("[dropped weapon]-[botttom] type", settings_cur_bot.chams_type);
+									add_var("[dropped weapon]-[botttom] visible", settings_cur_bot.visible);
+								}
+								end_group();
+								add_group("top layer");
+								{
+									add_var("[dropped weapon]-[top] enable", settings_cur_top.enable);
+									add_var("[dropped weapon]-[top] type", settings_cur_top.chams_type);
+									add_var("[dropped weapon]-[top] visible", settings_cur_top.visible);
+								}
+								end_group();
+							}
+							end_group();
 						}
 						end_group();
 
