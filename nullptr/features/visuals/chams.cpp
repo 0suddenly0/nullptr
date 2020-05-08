@@ -13,8 +13,6 @@ int selected_entity;
 auto global_chams_settings = settings::visuals::chams::player_settings[selected_entity];
 auto global_chams_settings_ragdoll = settings::visuals::chams::ragdoll_settings[selected_entity];
 
-std::string current_model_name;
-
 namespace chams
 {
 	void init()
@@ -139,6 +137,8 @@ namespace chams
 
 	void shutdown()
 	{
+		std::remove("csgo\\materials\\material_wireframe.vmt");
+		std::remove("csgo\\materials\\material_wireframe_walls.vmt");
 		std::remove("csgo\\materials\\material_glow.vmt");
 		std::remove("csgo\\materials\\material_glow_walls.vmt");
 		std::remove("csgo\\materials\\material_regular.vmt");
@@ -156,9 +156,7 @@ namespace chams
 		case 0: visible_check ? material = material_regular_walls : material = material_regular; break;
 		case 1: visible_check ? material = material_flat_walls : material = material_flat; break;
 		case 2: visible_check ? material = material_glow_walls : material = material_glow; break;
-		case 3: visible_check ? material = material_wireframe_walls : material = material_wireframe;
-			material->set_material_var_flag(MATERIAL_VAR_WIREFRAME, true);
-			break;
+		case 3: visible_check ? material = material_wireframe_walls : material = material_wireframe; material->set_material_var_flag(MATERIAL_VAR_WIREFRAME, true); break;
 		}
 
 		if (type == 2)
@@ -193,8 +191,6 @@ namespace chams
 
 		if (!model_name || !g_local_player)
 			return;
-
-		current_model_name = model_name;
 
 		auto ent = (c_base_player*)g_entity_list->get_client_entity(pInfo.entity_index);
 
