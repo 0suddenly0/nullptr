@@ -1037,6 +1037,9 @@ namespace visuals
 
 			for (int i = 0; i < smoke_info.size(); i++)
 				smoke_info.erase(smoke_info.begin() + i);
+
+			for (int i = 0; i < globals::damage_indicator::indicators.size(); i++)
+				globals::damage_indicator::indicators.erase(globals::damage_indicator::indicators.begin() + i);
 		}
 
 		if (!strcmp(event->get_name(), "player_hurt"))
