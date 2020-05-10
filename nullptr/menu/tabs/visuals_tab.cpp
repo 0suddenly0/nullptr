@@ -76,13 +76,18 @@ namespace menu
 					ImGui::ItemsToolTipEnd();
 				}
 
-				ImGui::Checkbox("weapon", &settings_cur->weapon);
+				ImGui::Checkbox("weapon [?]", &settings_cur->weapon);
+				if (ImGui::ItemsToolTipBegin("##weapon_bartooltip"))
+				{
+					ImGui::Checkbox("ammo in bar", &settings_cur->ammo_in_bar);
+					ImGui::Checkbox("ammo bar", &settings_cur->weapon_ammo);
 
-				ImGui::Checkbox("weapon ammo bar", &settings_cur->weapon_ammo);
+					ImGui::ItemsToolTipEnd();
+				}
 
-				const char* flags_c[] = { "scoped", "flashed", "defusing", "planting", "bomb", "armor", "helmet" };
-				bool* flags_b[] = { &settings_cur->flags_scoped, &settings_cur->flags_flashed, &settings_cur->flags_defusing, &settings_cur->flags_planting, &settings_cur->flags_bomb_carrier, &settings_cur->flags_armor, &settings_cur->flags_helmet };
-				ImGui::MultiCombo("flags", flags_c, flags_b, 7);
+				const char* flags_c[] = { "scoped", "flashed", "defusing", "planting", "reloading", "bomb", "armor", "helmet" };
+				bool* flags_b[] = { &settings_cur->flags_scoped, &settings_cur->flags_flashed, &settings_cur->flags_defusing, &settings_cur->flags_planting, &settings_cur->flags_reloading, &settings_cur->flags_bomb_carrier, &settings_cur->flags_armor, &settings_cur->flags_helmet };
+				ImGui::MultiCombo("flags", flags_c, flags_b, 8);
 
 			}
 			ImGui::EndChild("player");
@@ -108,9 +113,9 @@ namespace menu
 
 				ImGui::NewLine();
 
-				ImGui::ColorEdit3("arrmor bar outline", &settings_cur->armor_bar_outline);
-				ImGui::ColorEdit3("arrmor bar background", &settings_cur->armor_bar_background);
-				ImGui::ColorEdit3("arrmor bar main", &settings_cur->armor_bar_main);
+				ImGui::ColorEdit3("armor bar outline", &settings_cur->armor_bar_outline);
+				ImGui::ColorEdit3("armor bar background", &settings_cur->armor_bar_background);
+				ImGui::ColorEdit3("armor bar main", &settings_cur->armor_bar_main);
 
 				ImGui::NewLine();
 
@@ -292,6 +297,7 @@ namespace menu
 					ImGui::ColorEdit4("##colorbox_dropped_weapons", &settings::visuals::dropped_weapon::box_color);
 
 					ImGui::Checkbox("ammo bar##dropped_weapons", &settings::visuals::dropped_weapon::ammo_bar);
+					ImGui::Checkbox("ammo in bar##dropped_weapons", &settings::visuals::dropped_weapon::ammo_in_bar);
 
 					ImGui::ColorEdit3("outline##dropped_weapons", &settings::visuals::dropped_weapon::bar_outline);
 					ImGui::ColorEdit3("background##dropped_weapons", &settings::visuals::dropped_weapon::bar_background);

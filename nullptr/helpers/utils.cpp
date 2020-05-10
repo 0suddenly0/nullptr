@@ -348,48 +348,7 @@ namespace utils
     exit:
         return success ? WAIT_OBJECT_0 : WAIT_TIMEOUT;
     }
-    void ReadWavFileIntoMemory(std::string fname, BYTE** pb, DWORD* fsize) {
-        std::ifstream f(fname, std::ios::binary);
-
-        f.seekg(0, std::ios::end);
-        int lim = f.tellg();
-        *fsize = lim;
-
-        *pb = new BYTE[lim];
-        f.seekg(0, std::ios::beg);
-
-        f.read((char*)*pb, lim);
-
-        f.close();
-    }
-
-    void play_sound(const char* file)
-    {
-        static bool in = false;
-        static DWORD dwFileSize;
-        static BYTE* pFileBytes;
-        static float fVolume = 22.f;
-        if (!in)
-        {
-            ReadWavFileIntoMemory(file, &pFileBytes, &dwFileSize);
-            in = true;
-        }
-
-        static BYTE* pDataOffset = (pFileBytes + 40);
-
-        if (fVolume != settings::misc::hitsound::volume)
-        {
-            fVolume = settings::misc::hitsound::volume;
-
-            __int16* p = (__int16*)(pDataOffset + 8);
-            for (int i = 80 / sizeof(*p); i < dwFileSize / sizeof(*p); i++) {
-                p[i] = (float)p[i] * fVolume;
-            }
-        }
-
-        PlaySound((LPCWSTR)pFileBytes, NULL, SND_MEMORY | SND_ASYNC);
-    }
-    /*
+   /*
      * @brief Scan for a given byte pattern on a module
      *
      * @param module    Base of the module to search

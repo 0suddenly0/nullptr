@@ -737,6 +737,7 @@ namespace config
 								add_group("ammo");
 								{
 									add_var("[esp]-[weapon]-[" + val + "] enable", settings_cur.weapon_ammo);
+									add_var("[esp]-[weapon]-[" + val + "] text in bar", settings_cur.weapon_ammo);
 									add_var("[esp]-[weapon]-[" + val + "] bar color", settings_cur.ammo_bar_main);
 									add_var("[esp]-[weapon]-[" + val + "] bar outline color", settings_cur.ammo_bar_outline);
 									add_var("[esp]-[weapon]-[" + val + "] bar backgroud color", settings_cur.ammo_bar_background);
@@ -751,6 +752,7 @@ namespace config
 									add_var("[esp]-[flags]-[" + val + "] defusing", settings_cur.flags_defusing);
 									add_var("[esp]-[flags]-[" + val + "] helment", settings_cur.flags_helmet);
 									add_var("[esp]-[flags]-[" + val + "] planting", settings_cur.flags_planting);
+									add_var("[esp]-[flags]-[" + val + "] reloading", settings_cur.flags_reloading);
 									add_var("[esp]-[flags]-[" + val + "] scoped", settings_cur.flags_scoped);
 								}
 								end_group();
@@ -1075,6 +1077,7 @@ namespace config
 							add_var("[dropped weapon] box color", settings::visuals::dropped_weapon::box_color);
 
 							add_var("[dropped weapon] ammo bar", settings::visuals::dropped_weapon::ammo_bar);
+							add_var("[dropped weapon] ammo in bar", settings::visuals::dropped_weapon::ammo_in_bar);
 							add_var("[dropped weapon] ammo color outline", settings::visuals::dropped_weapon::bar_outline);
 							add_var("[dropped weapon] ammo color back", settings::visuals::dropped_weapon::bar_background);
 							add_var("[dropped weapon] ammo color main", settings::visuals::dropped_weapon::bar_main);

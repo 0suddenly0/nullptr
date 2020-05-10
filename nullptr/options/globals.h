@@ -40,11 +40,6 @@ struct damage_indicator_t
 
 namespace globals
 {
-	std::uint8_t* return_to_unknown;
-
-	int tickbase_shift = 0;
-
-	BYTE* hit_sound_byte;
 
 	namespace bind_window
 	{

@@ -49,8 +49,10 @@ DWORD WINAPI attach(LPVOID base)
 		hooks::initialize();
 		
 #ifdef _DEBUG
-		input_sys::register_hotkey(VK_END, [base]() {
-			g_unload = true;
+		input_sys::register_hotkey(VK_END, [base]() 
+			{
+				if (lua::scripts_loaded.size() == 0)	g_unload = true;
+				else notify::add("unload all lua");
 			});
 #endif
 

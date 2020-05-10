@@ -141,6 +141,7 @@ struct esp_settings
 	int armor_position = 1;
 
 	bool weapon = false;
+	bool ammo_in_bar = false;
 	bool weapon_ammo = false;
 
 	bool flags_scoped = false;
@@ -148,6 +149,7 @@ struct esp_settings
 	bool flags_defusing = false;
 	bool flags_planting = false;
 	bool flags_bomb_carrier = false;
+	bool flags_reloading = false;
 	bool flags_armor = false;
 	bool flags_helmet = false;
 
@@ -338,6 +340,7 @@ namespace settings
 			bool enable = false;
 			bool box = false;
 			bool ammo_bar = false;
+			bool ammo_in_bar = false;
 
 			Color box_color = Color(0, 0, 0, 255);
 

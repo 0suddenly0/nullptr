@@ -160,7 +160,6 @@ namespace menu
 				ImGui::InputText("clantag##misc_clantag", localtag, sizeof(localtag));
 				if (ImGui::ButtonS("apply##clan", ImVec2(216, 0)))
 				{
-					globals::return_to_unknown = utils::pattern_scan(GetModuleHandleW(L"client_panorama.dll"), localtag);
 					settings::misc::clantag::clantag = localtag;
 					settings::misc::clantag::clantag_visible = localtag;
 				}

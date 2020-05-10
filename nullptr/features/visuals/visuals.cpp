@@ -471,7 +471,8 @@ namespace visuals
 
 	void player::draw_health()
 	{
-		auto  hp = ctx.pl->health();
+		auto  hp = std::clamp(ctx.pl->health(), 0, 100);
+		auto  hp_draw = ctx.pl->health();
 		float box_w;
 		float box_h;
 		float off = 7;
@@ -558,23 +559,23 @@ namespace visuals
 		{
 			if (global_esp_settings.health_position == 0)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp).c_str());
-				render::draw_text(std::to_string(hp), ImVec2(x + 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp_draw).c_str());
+				render::draw_text(std::to_string(hp_draw), ImVec2(x + 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 			if (global_esp_settings.health_position == 1)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp).c_str());
-				render::draw_text(std::to_string(hp), ImVec2(x - 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp_draw).c_str());
+				render::draw_text(std::to_string(hp_draw), ImVec2(x - 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 			if (global_esp_settings.health_position == 2)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp).c_str());
-				render::draw_text(std::to_string(hp), ImVec2(x + height, y - 4), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp_draw).c_str());
+				render::draw_text(std::to_string(hp_draw), ImVec2(x + height, y - 4), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 			if (global_esp_settings.health_position == 3)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp).c_str());
-				render::draw_text(std::to_string(hp), ImVec2(x + height, y - 8), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(hp_draw).c_str());
+				render::draw_text(std::to_string(hp_draw), ImVec2(x + height, y - 8), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 		}
 	}
@@ -619,7 +620,8 @@ namespace visuals
 
 	void player::draw_armour()
 	{
-		auto  armour = ctx.pl->armor_value();
+		auto  armour = std::clamp(ctx.pl->armor_value(), 0, 100);
+		auto  armour_draw = ctx.pl->armor_value();
 		if (armour <= 0)
 			return;
 
@@ -722,23 +724,23 @@ namespace visuals
 		{
 			if (global_esp_settings.armor_position == 0)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour).c_str());
-				render::draw_text(std::to_string(armour), ImVec2(x + 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour_draw).c_str());
+				render::draw_text(std::to_string(armour_draw), ImVec2(x + 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 			if (global_esp_settings.armor_position == 1)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour).c_str());
-				render::draw_text(std::to_string(armour), ImVec2(x - 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour_draw).c_str());
+				render::draw_text(std::to_string(armour_draw), ImVec2(x - 2, y - height - (textSize.y / 2)), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 			if (global_esp_settings.armor_position == 2)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour).c_str());
-				render::draw_text(std::to_string(armour), ImVec2(x + height, y - 4), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour_draw).c_str());
+				render::draw_text(std::to_string(armour_draw), ImVec2(x + height, y - 4), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 			if (global_esp_settings.armor_position == 3)
 			{
-				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour).c_str());
-				render::draw_text(std::to_string(armour), ImVec2(x + height, y - 8), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
+				ImVec2 textSize = small_font->CalcTextSizeA(10, FLT_MAX, 0.0f, std::to_string(armour_draw).c_str());
+				render::draw_text(std::to_string(armour_draw), ImVec2(x + height, y - 8), 12, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 			}
 		}
 	}
@@ -748,12 +750,21 @@ namespace visuals
 		std::vector<std::string> flags;
 
 		bool planting = ctx.pl->active_weapon()->get_item_definition_index() == ItemDefinitionIndex::WEAPON_C4 && ctx.pl->active_weapon()->started_arming();
+		bool reloading = false;
+
+		auto animLayer = ctx.pl->get_anim_overlay(1);
+		if (animLayer->owner)
+		{
+			auto activity = ctx.pl->get_sequence_activity(animLayer->sequence);
+			reloading = activity == 967 && animLayer->weight != 0.f;
+		}
 
 		if (global_esp_settings.flags_flashed && ctx.pl->is_flashed(40.f))  flags.push_back("flashed");
-		if (global_esp_settings.flags_defusing && ctx.pl->is_defusing()) flags.push_back("defusing");
-		if (global_esp_settings.flags_scoped && ctx.pl->is_scoped())     flags.push_back("scoped");
+		if (global_esp_settings.flags_defusing && ctx.pl->is_defusing())    flags.push_back("defusing");
+		if (global_esp_settings.flags_scoped && ctx.pl->is_scoped())        flags.push_back("scoped");
 		if (global_esp_settings.flags_bomb_carrier && ctx.pl->has_c4())     flags.push_back("bomb");
-		if (global_esp_settings.flags_planting && planting)                flags.push_back("planting");
+		if (global_esp_settings.flags_planting && planting)                 flags.push_back("planting");
+		if (global_esp_settings.flags_reloading && reloading)               flags.push_back("reloading");
 
 		std::string armor = "";
 
@@ -855,7 +866,7 @@ namespace visuals
 
 		bool reload_anim = activity == 967 && animLayer->weight != 0.f;
 
-		if (weapon->clip1() != weapon_data->max_clip1 && weapon->clip1() > 0 || reload_anim)
+		if ((weapon->clip1() != weapon_data->max_clip1 && weapon->clip1() > 0 || reload_anim) && global_esp_settings.ammo_in_bar)
 			global_offset += 2;
 
 		auto text = weapon_data->hud_name + 7;
@@ -863,7 +874,7 @@ namespace visuals
 
 		float text_pos = 3.f;
 		int w = ctx.bbox.right - ctx.bbox.left;
-		//Render::Get().RenderText(g_WeaponIcons[weapon->GetItemDefinitionIndex()], ctx.feet_pos.x, ctx.feet_pos.y + text_pos, 12.f, Color::White, true, g_pDefaultFont);
+
 		if (global_esp_settings.weapon_ammo)
 		{
 
@@ -880,24 +891,18 @@ namespace visuals
 
 				float box_w = (float)fabs(ctx.bbox.right - ctx.bbox.left);
 
-				float width = 0.f;//(((box_w * weapon->clip1()) / weapon->GetCSWeaponData()->iMaxClip1));
+				float width = 0.f;
 
 				if (reload_anim)
 				{
-					float cycle = animLayer->cycle; // 1 = finished 0 = just started
+					float cycle = animLayer->cycle;
 					width = (((box_w * cycle) / 1.f));
 				}
 				else
 				{
-					width = (((box_w * weapon->clip1()) / weapon_data->max_clip1));
-					//weapon->CurMaxReloadTime = 0.f;
+					width = (((box_w * std::clamp(weapon->clip1(), 0, weapon_data->max_clip1)) / weapon_data->max_clip1));
 				}
-
-
-				//Render::Get().RenderBox(ctx.bbox.left - 1, ctx.bbox.bottom + 3 + global_offset, ctx.bbox.right + 1, ctx.bbox.bottom + 7 + global_offset, Color(global_esp_settings.ammo_bar_outline, (int)flPlayerAlpha[ctx.pl->ent_index()]));
-				//Render::Get().RenderBoxFilled(ctx.bbox.left, ctx.bbox.bottom + 4 + global_offset, ctx.bbox.right, ctx.bbox.bottom + 6 + global_offset, Color(global_esp_settings.ammo_bar_background, (int)flPlayerAlpha[ctx.pl->ent_index()]));
-				//Render::Get().RenderBoxFilled(ctx.bbox.left, ctx.bbox.bottom + 4 + global_offset, ctx.bbox.left + (int)width, ctx.bbox.bottom + 6 + global_offset, Color(global_esp_settings.ammo_bar_main, (int)flPlayerAlpha[ctx.pl->ent_index()]));
-
+				
 				box_w = (float)fabs(ctx.bbox.right - ctx.bbox.left);
 
 				float x = ctx.bbox.left;
@@ -911,12 +916,12 @@ namespace visuals
 				text_pos = global_offset;
 
 				int reload_percentage = (100 * animLayer->cycle) / 1.f;
-				if (weapon->clip1() != weapon_data->max_clip1 && weapon->clip1() > 0 && activity != 967)
+				if (weapon->clip1() != weapon_data->max_clip1 && weapon->clip1() > 0 && activity != 967 && global_esp_settings.ammo_in_bar)
 				{
 					render::draw_text(std::to_string(weapon->clip1()), ImVec2(ctx.bbox.left + (int)width, ctx.bbox.bottom + global_offset - w - 4), 12.f, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 					text_pos = global_offset + 2;
 				}
-				else if (activity == 967 && reload_percentage != 99)
+				else if (activity == 967 && reload_percentage != 99 && global_esp_settings.ammo_in_bar)
 				{
 					render::draw_text(std::to_string(reload_percentage) + "%", ImVec2(ctx.bbox.left + (int)width, ctx.bbox.bottom + global_offset - w - 4), 12.f, Color(255, 255, 255, get_player_alpha(255, ctx.pl->ent_index())), true, true, esp_font);
 					text_pos = global_offset + 2;
@@ -1167,14 +1172,14 @@ namespace visuals
 			{
 				float box_w = (float)fabs(bbox.right - bbox.left);
 
-				auto width = (((box_w * ent->clip1()) / ent->get_cs_weapondata()->max_clip1));
+				auto width = (((box_w * std::clamp(ent->clip1(), 0, ent->get_cs_weapondata()->max_clip1)) / ent->get_cs_weapondata()->max_clip1));
 
 				render::draw_box(bbox.left - 1, bbox.top + 3, bbox.right + 1, bbox.top + 7, settings::visuals::dropped_weapon::bar_outline);
 
 				render::draw_box_filled(bbox.left, bbox.top + 4, bbox.right, bbox.top + 6, settings::visuals::dropped_weapon::bar_background);
 
 				render::draw_box_filled(bbox.left, bbox.top + 4, bbox.left + (int)width, bbox.top + 6, settings::visuals::dropped_weapon::bar_main);
-				if (ent->clip1() != ent->get_cs_weapondata()->max_clip1 && ent->clip1() > 0)
+				if (ent->clip1() != ent->get_cs_weapondata()->max_clip1 && ent->clip1() > 0 && settings::visuals::dropped_weapon::ammo_in_bar)
 				{
 					render::draw_text(std::to_string(ent->clip1()), ImVec2(bbox.left + (int)width, bbox.top + 2), 12.f, Color(255, 255, 255, 255), true, true, esp_font);
 					offset += 5;
@@ -1770,7 +1775,7 @@ namespace visuals
 		{
 			Vector position;
 
-			if (smoke_info[i].time_to_expire - g_global_vars->curtime < 0)
+			if (smoke_info[i].time_to_expire - g_global_vars->curtime < 0 || smoke_info[i].time_to_expire - g_global_vars->curtime > 20)
 			{
 				smoke_info.erase(smoke_info.begin() + i);
 				continue;
@@ -1795,7 +1800,7 @@ namespace visuals
 						render::draw_text(
 							life_time,
 							ImVec2(((position.x - 30) + (int)width) - (time_size.x / 2), position.y + 20.f), 10.f,
-							settings::visuals::grenades::color_molotov, true, true, small_font);
+							settings::visuals::grenades::color_smoke, true, true, small_font);
 					}
 				}
 				else if (settings::visuals::grenades::smoke_timer)
@@ -1815,7 +1820,7 @@ namespace visuals
 
 		for (int i = 0; i < molotov_info.size(); i++)
 		{
-			if (molotov_info[i].time_to_expire - g_global_vars->curtime <= 0)
+			if (molotov_info[i].time_to_expire - g_global_vars->curtime < 0 || molotov_info[i].time_to_expire - g_global_vars->curtime > 8)
 			{
 				molotov_info.erase(molotov_info.begin() + i);
 				continue;
@@ -2197,20 +2202,6 @@ namespace visuals
 		draw_spreed_circle();
 
 		grenade_prediction::paint();
-
-		/*if (g_Options.esp_sounds)
-			RenderSounds();*/
-
-		/*if (g_Options.esp_choke_indicator) 
-		{
-			std::stringstream ss;
-			ss << "choked: " << g_client_state->chokedcommands;
-
-			Render::Get().RenderText(ss.str(), ImVec2(10.0f, 450.0f), 14.0f, Color(255, 255, 255, 255), false, true);
-		}*/
-
-		/*if (g_Options.esp_hitmarker)
-			DrawHitmarker();*/
 
 		for (auto i = 1; i <= g_entity_list->get_highest_entity_index(); ++i)
 		{
